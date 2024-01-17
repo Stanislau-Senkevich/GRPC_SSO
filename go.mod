@@ -1,4 +1,4 @@
-module GRPC_SSO
+module github.com/Stanislau-Senkevich/GRPC_SSO
 
 go 1.21.4
 
