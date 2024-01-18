@@ -24,6 +24,7 @@ type AuthRepository interface {
 }
 
 type PermissionsRepository interface {
+	IsAdmin(ctx context.Context, userID int64) (bool, error)
 }
 
 type UserInfoRepository interface {

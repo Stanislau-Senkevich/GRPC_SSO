@@ -3,6 +3,7 @@ package grpcapp
 import (
 	"fmt"
 	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/grpc/auth"
+	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/grpc/permissions"
 	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/services"
 	"google.golang.org/grpc"
 	"log/slog"
@@ -21,10 +22,12 @@ func New(
 	log *slog.Logger,
 	port int,
 	authService services.Auth,
+	permService services.Permissions,
 ) *App {
 	gRPCServer := grpc.NewServer()
 
 	auth.Register(gRPCServer, log, authService)
+	permissions.Register(gRPCServer, log, permService)
 
 	return &App{log, gRPCServer, authService, port}
 }

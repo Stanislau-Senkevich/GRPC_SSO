@@ -10,4 +10,5 @@ type User struct {
 	Surname      string    `bson:"surname"`
 	PassHash     string    `bson:"pass_hash"`
 	RegisteredAt time.Time `bson:"registered_at"`
+	IsAdmin      bool      `bson:"is_admin"`
 }

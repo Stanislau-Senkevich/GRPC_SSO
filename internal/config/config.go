@@ -51,11 +51,11 @@ func MustLoad() *Config { //nolint
 	}
 
 	if err := cleanenv.ReadConfig(path, &cfg); err != nil {
-		panic(fmt.Errorf("error due reading config: %w", err))
+		panic(fmt.Errorf("failed to read config: %w", err))
 	}
 
 	if err := parseEnv(&cfg); err != nil {
-		panic(fmt.Errorf("error due parsing env: %w", err))
+		panic(fmt.Errorf("failed to parse the enviroment: %w", err))
 	}
 
 	return &cfg
@@ -63,23 +63,23 @@ func MustLoad() *Config { //nolint
 
 func parseEnv(cfg *Config) error {
 	if err := gotenv.Load(); err != nil {
-		return fmt.Errorf("env was not uploaded from file: %w", err)
+		return fmt.Errorf("failed to upload env file: %w", err)
 	}
 
 	if err := viper.BindEnv("mongo_user"); err != nil {
-		return fmt.Errorf("mongo_user was not set up: %w", err)
+		return fmt.Errorf("failed to set up mongo_user: %w", err)
 	}
 
 	if err := viper.BindEnv("mongo_password"); err != nil {
-		return fmt.Errorf("mongo_password was not set up: %w", err)
+		return fmt.Errorf("failed to set up mongo_password: %w", err)
 	}
 
 	if err := viper.BindEnv("hash_salt"); err != nil {
-		return fmt.Errorf("mongo_user was not set up: %w", err)
+		return fmt.Errorf("failed to set up hash_salt: %w", err)
 	}
 
 	if err := viper.BindEnv("signing_key"); err != nil {
-		return fmt.Errorf("mongo_password was not set up: %w", err)
+		return fmt.Errorf("failed to set up signing_key: %w", err)
 	}
 
 	cfg.Mongo.User = viper.GetString("mongo_user")

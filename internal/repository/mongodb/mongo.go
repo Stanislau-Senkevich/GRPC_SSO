@@ -34,21 +34,21 @@ func InitMongoRepository(cfg *config.MongoConfig, logger *slog.Logger, hashSalt 
 
 	db, err := mongo.Connect(context.TODO(), opts)
 	if err != nil {
-		return nil, fmt.Errorf("error due connecting to mongo: %w", err)
+		return nil, fmt.Errorf("failed to connect to mongo: %w", err)
 	}
 
 	log.Info("connected successfully")
 	log.Info("trying to ping mongodb")
 
 	if err = db.Database(cfg.DBName).RunCommand(context.TODO(), bson.D{{Key: "ping", Value: 1}}).Err(); err != nil {
-		return nil, fmt.Errorf("error due pinging mongodb: %w", err)
+		return nil, fmt.Errorf("failed to ping mongo: %w", err)
 	}
 	log.Info("pinged successfully")
 
 	return &MongoRepository{
 		Db:       db,
 		Config:   cfg,
-		log:      log,
+		log:      logger,
 		hashSalt: hashSalt,
 	}, nil
 }

@@ -18,6 +18,7 @@ type Auth interface {
 }
 
 type Permissions interface {
+	IsAdmin(ctx context.Context, userID int64) (bool, error)
 }
 
 type UserInfo interface {
