@@ -1,11 +1,11 @@
 package app
 
 import (
-	grpcapp "GRPC_SSO/internal/app/grpc"
-	"GRPC_SSO/internal/config"
-	"GRPC_SSO/internal/repository/mongodb"
-	"GRPC_SSO/internal/services/auth"
 	"fmt"
+	grpcapp "github.com/Stanislau-Senkevich/GRPC_SSO/internal/app/grpc"
+	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/config"
+	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/repository/mongodb"
+	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/services/auth"
 	"log/slog"
 	"time"
 )

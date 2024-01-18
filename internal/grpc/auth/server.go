@@ -1,10 +1,12 @@
 package auth
 
 import (
-	"GRPC_SSO/internal/domain/models"
-	"GRPC_SSO/internal/lib/sl"
-	"GRPC_SSO/internal/services"
 	"context"
+	"errors"
+	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/domain/models"
+	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/lib/sl"
+	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/repository"
+	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/services"
 	ssov1 "github.com/Stanislau-Senkevich/protocols/gen/go/sso"
 	"github.com/badoux/checkmail"
 	"google.golang.org/grpc"
@@ -31,6 +33,10 @@ func (s *serverAPI) SignIn(
 	ctx context.Context,
 	req *ssov1.SignInRequest,
 ) (*ssov1.SignInResponse, error) {
+	const op = "server.auth.SignIn"
+	log := s.log.With(
+		slog.String("op", op),
+	)
 
 	if err := validateLogin(req.GetEmail(), req.GetPassword()); err != nil {
 		return nil, err
@@ -38,7 +44,10 @@ func (s *serverAPI) SignIn(
 
 	token, err := s.auth.SignIn(ctx, req.GetEmail(), req.GetPassword())
 	if err != nil {
-		s.log.Info("failed to log in user", sl.Err(err))
+		if errors.Is(err, repository.ErrUserNotFound) {
+			return nil, status.Error(codes.InvalidArgument, repository.ErrUserNotFound.Error())
+		}
+		log.Error("failed to log in user", sl.Err(err))
 		return nil, status.Error(codes.Internal, "internal error")
 	}
 
@@ -51,13 +60,13 @@ func (s *serverAPI) SignUp(
 	ctx context.Context,
 	req *ssov1.SignUpRequest,
 ) (*ssov1.SignUpResponse, error) {
-	if err := validateRegister(req.GetEmail(), req.GetPassword(),
-		req.GetPhoneNumber(), req.GetName(), req.GetSurname()); err != nil {
-		return nil, err
-	}
+	const op = "server.auth.SignIn"
+	log := s.log.With(
+		slog.String("op", op),
+	)
 
 	preUser := &models.User{
-		Id:           -1,
+		ID:           -1,
 		Email:        req.GetEmail(),
 		PhoneNumber:  req.GetPhoneNumber(),
 		Name:         req.GetName(),
@@ -66,9 +75,16 @@ func (s *serverAPI) SignUp(
 		RegisteredAt: time.Now().UTC(),
 	}
 
+	if err := validateRegister(preUser); err != nil {
+		return nil, err
+	}
+
 	userId, err := s.auth.SignUp(ctx, preUser)
 	if err != nil {
-		s.log.Error("error due creating user", sl.Err(err))
+		if errors.Is(err, repository.ErrUserExists) {
+			return nil, status.Error(codes.InvalidArgument, repository.ErrUserExists.Error())
+		}
+		log.Error("failed to create user", sl.Err(err))
 		return nil, status.Error(codes.Internal, "internal error: %s")
 	}
 
@@ -91,24 +107,24 @@ func validateLogin(email, password string) error {
 	return nil
 }
 
-func validateRegister(email, password, phoneNumber, name, surname string) error {
-	if err := checkmail.ValidateFormat(email); err != nil {
+func validateRegister(user *models.User) error {
+	if err := checkmail.ValidateFormat(user.Email); err != nil {
 		return status.Error(codes.InvalidArgument, "email format is invalid")
 	}
 
-	if password == "" {
+	if user.PassHash == "" {
 		return status.Error(codes.InvalidArgument, "password is required")
 	}
 
-	if phoneNumber == "" {
+	if user.PhoneNumber == "" {
 		return status.Error(codes.InvalidArgument, "phone number is required")
 	}
 
-	if name == "" {
+	if user.Name == "" {
 		return status.Error(codes.InvalidArgument, "name is required")
 	}
 
-	if surname == "" {
+	if user.Surname == "" {
 		return status.Error(codes.InvalidArgument, "surname is required")
 	}
 

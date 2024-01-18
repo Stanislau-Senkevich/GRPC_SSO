@@ -1,9 +1,9 @@
 package grpcapp
 
 import (
-	"GRPC_SSO/internal/grpc/auth"
-	"GRPC_SSO/internal/services"
 	"fmt"
+	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/grpc/auth"
+	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/services"
 	"google.golang.org/grpc"
 	"log/slog"
 	"net"

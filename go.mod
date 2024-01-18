@@ -1,14 +1,13 @@
 module github.com/Stanislau-Senkevich/GRPC_SSO
 
-go 1.21.4
-
-toolchain go1.21.6
+go 1.21.6
 
 require (
 	github.com/BurntSushi/toml v1.2.1 // indirect
 	github.com/Stanislau-Senkevich/protocols v0.0.0-20240115114359-84957a4786e4 // indirect
 	github.com/badoux/checkmail v1.2.4 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
+	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect

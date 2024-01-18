@@ -1,9 +1,9 @@
 package mongodb
 
 import (
-	"GRPC_SSO/internal/config"
 	"context"
 	"fmt"
+	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/config"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -17,11 +17,17 @@ type MongoRepository struct {
 	hashSalt string
 }
 
-func InitMongoRepository(cfg *config.MongoConfig, log *slog.Logger, hashSalt string) (
+func InitMongoRepository(cfg *config.MongoConfig, logger *slog.Logger, hashSalt string) (
 	*MongoRepository, error) {
+	const op = "mongo.InitMongoRepository"
+
+	log := logger.With(
+		slog.String("op", op),
+	)
+
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
-	//conn := fmt.Sprintf(cfg.ConnectionString, cfg.User, cfg.Password)
-	conn := cfg.ConnectionString
+	conn := fmt.Sprintf(cfg.ConnectionString, cfg.User, cfg.Password)
+	//conn := cfg.ConnectionString
 	opts := options.Client().ApplyURI(conn).SetServerAPIOptions(serverAPI)
 
 	log.Info("trying to connect to mongodb")

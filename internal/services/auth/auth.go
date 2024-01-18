@@ -1,11 +1,12 @@
 package auth
 
 import (
-	"GRPC_SSO/internal/domain/models"
-	"GRPC_SSO/internal/lib/sl"
-	"GRPC_SSO/internal/repository"
 	"context"
 	"fmt"
+	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/domain/models"
+	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/lib/jwt"
+	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/lib/sl"
+	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/repository"
 	"golang.org/x/crypto/bcrypt"
 	"log/slog"
 	"time"
@@ -46,7 +47,20 @@ func (s *AuthService) SignIn(ctx context.Context, email, password string) (strin
 	if err != nil {
 		return "", fmt.Errorf("%s: %w", op, err)
 	}
-	return fmt.Sprintf("%d", userId), nil
+
+	log.Info("user successfully logged in")
+
+	user := models.User{ID: userId, Email: email}
+
+	token, err := jwt.NewToken(user, s.tokenTTL, s.signingKey)
+	if err != nil {
+		s.log.Error("failed to generate jwt-token", sl.Err(err))
+		return "", err
+	}
+
+	log.Info("token successfully generated")
+
+	return token, nil
 }
 
 func (s *AuthService) SignUp(ctx context.Context, user *models.User) (int64, error) {

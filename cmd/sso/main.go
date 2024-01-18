@@ -1,8 +1,8 @@
 package main
 
 import (
-	"GRPC_SSO/internal/app"
-	"GRPC_SSO/internal/config"
+	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/app"
+	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/config"
 	"log/slog"
 	"os"
 	"os/signal"

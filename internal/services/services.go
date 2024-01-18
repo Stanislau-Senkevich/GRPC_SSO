@@ -1,8 +1,9 @@
 package services
 
 import (
-	"GRPC_SSO/internal/domain/models"
 	"context"
+
+	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/domain/models"
 )
 
 type Services interface {

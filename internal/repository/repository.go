@@ -1,8 +1,15 @@
 package repository
 
 import (
-	"GRPC_SSO/internal/domain/models"
 	"context"
+	"errors"
+
+	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/domain/models"
+)
+
+var (
+	ErrUserExists   = errors.New("user already exists")
+	ErrUserNotFound = errors.New("user not found")
 )
 
 type Repository interface {

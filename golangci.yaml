@@ -1,0 +1,141 @@
+run:
+  skip-dirs:
+    - vendor
+    - bin
+    - var
+    - tmp
+  skip-files:
+    - \.pb\.go$
+    - \.gen\.go$
+    - \_test\.go$
+
+govet:
+  enable:
+    - fieldalignment
+
+linters:
+  disable-all: false
+  enable:
+    - dogsled
+    - dupl
+    - errcheck
+    - gocognit
+    - goconst
+    - gocyclo
+    - gofmt
+    - goimports
+    - govet
+    - ineffassign
+    - misspell
+    - prealloc
+    - unconvert
+    - whitespace
+    - gosimple
+    - staticcheck
+    - asasalint
+    - asciicheck
+    - bidichk
+    - bodyclose
+    - containedctx
+    - contextcheck
+    - decorder
+    - dupword
+    - durationcheck
+    - errchkjson
+    - errname
+    - errorlint
+    - execinquery
+    - exhaustive
+    - exportloopref
+    - forbidigo
+    - forcetypeassert
+    - ginkgolinter
+    - gocheckcompilerdirectives
+    - gocritic
+    - godot
+    - goerr113
+    - goheader
+    - gomoddirectives
+    - gomodguard
+    - goprintffuncname
+    - gosmopolitan
+    - grouper
+    - importas
+    - interfacebloat
+    - ireturn
+    - loggercheck
+    - maintidx
+    - makezero
+    - mirror
+    - musttag
+    - nestif
+    - nilerr
+    - nilnil
+    - noctx
+    - nonamedreturns
+    - nosprintfhostport
+    - paralleltest
+    - predeclared
+    - promlinter
+    - reassign
+    - revive
+    - sqlclosecheck
+    - stylecheck
+    - tenv
+    - testableexamples
+    - testpackage
+    - thelper
+    - tparallel
+    - unparam
+    - usestdlibvars
+    - varnamelen
+    - wastedassign
+    - wrapcheck
+    - zerologlint
+    - gochecknoglobals
+    - gochecknoinits
+    - godox
+    - nakedret
+    - cyclop
+    - lll
+    - gosec
+  disable:
+    - gci #the sort of imports
+    - nlreturn #empty space before return
+    - gofumpt #add more go fmt, but need to be implemetned inside the all IDE
+    - tagalign #usefull align, but not implemented inside the all IDE yet
+    - wsl #force to use emptylines
+    - depguard # import management
+
+linters-settings:
+  tagliatelle:
+    case:
+      use-field-name: false
+      rules:
+        json: snake
+        yaml: camel
+        xml: camel
+  godot:
+    scope: all
+    period: false
+    capital: false
+  cyclop:
+    max-complexity: 13
+  varnamelen:
+    min-name-length: 2
+    ignore-decls:
+      - c *fiber.Ctx
+      - t testing.T
+      - i int
+      - j int
+  wrapcheck:
+    ignoreSigs:
+      - .SendStatus(
+      - .SendString(
+      - .JSON(
+      - .Next(
+      - .Errorf(
+      - errors.New(
+      - status.Error(
+  exhaustive:
+    default-signifies-exhaustive: true
