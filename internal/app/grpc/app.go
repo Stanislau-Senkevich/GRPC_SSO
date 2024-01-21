@@ -2,6 +2,7 @@ package grpcapp
 
 import (
 	"fmt"
+	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/config"
 	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/grpc/auth"
 	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/grpc/permissions"
 	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/grpc/userinfo"
@@ -16,13 +17,13 @@ type App struct {
 	log         *slog.Logger
 	gRPCServer  *grpc.Server
 	authService services.Auth
-	port        int
+	gRPCConfig  *config.GRPCConfig
 }
 
 // New creates a new instance of the application with the specified dependencies and configurations.
 func New(
 	log *slog.Logger,
-	port int,
+	gRPCConfig *config.GRPCConfig,
 
 	authService services.Auth,
 	permService services.Permissions,
@@ -35,13 +36,14 @@ func New(
 	gRPCServer := grpc.NewServer(
 		grpc.UnaryInterceptor(interceptor.Unary()),
 		grpc.StreamInterceptor(interceptor.Stream()),
+		grpc.ConnectionTimeout(gRPCConfig.Timeout),
 	)
 
 	auth.Register(gRPCServer, log, authService)
 	permissions.Register(gRPCServer, log, permService)
 	userinfo.Register(gRPCServer, log, userInfoService)
 
-	return &App{log, gRPCServer, authService, port}
+	return &App{log, gRPCServer, authService, gRPCConfig}
 }
 
 func (a *App) MustRun() {
@@ -56,7 +58,7 @@ func (a *App) Run() error {
 
 	log := a.log.With(slog.String("op", op))
 
-	l, err := net.Listen("tcp", fmt.Sprintf(":%d", a.port))
+	l, err := net.Listen("tcp", fmt.Sprintf(":%d", a.gRPCConfig.Port))
 	if err != nil {
 		return fmt.Errorf("%s: %w", op, err)
 	}
@@ -75,7 +77,7 @@ func (a *App) Stop() {
 	const op = "grpcapp.Stop"
 
 	a.log.With(slog.String("op", op)).
-		Info("stopping grpc server", slog.Int("port", a.port))
+		Info("stopping grpc server", slog.Int("port", a.gRPCConfig.Port))
 
 	a.gRPCServer.GracefulStop()
 }

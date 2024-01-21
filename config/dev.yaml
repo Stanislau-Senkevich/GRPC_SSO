@@ -1,0 +1,12 @@
+env: "dev"
+token_ttl: 1h
+
+mongo_config:
+  db_name: "GRPCMicroservicesCluster"
+  conn_string: "mongodb+srv://%s:%s@grpcmicroservicescluste.6q1e9je.mongodb.net/?retryWrites=true&w=majority"
+  collections:
+    user: "user"
+
+grpc:
+  port: 44044
+  timeout: 5s

@@ -45,7 +45,7 @@ func New(
 	}
 
 	grpcApp := grpcapp.New(
-		log, grpcPort,
+		log, &cfg.GRPC,
 		authService, permService, userInfoService,
 		accessibleRoles, jwtManager,
 	)
