@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/grpc/auth"
 	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/grpc/permissions"
+	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/grpc/userinfo"
+	jwtmanager "github.com/Stanislau-Senkevich/GRPC_SSO/internal/lib/jwt"
 	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/services"
 	"google.golang.org/grpc"
 	"log/slog"
@@ -17,17 +19,27 @@ type App struct {
 	port        int
 }
 
-// New creates new gRPC app
+// New creates a new instance of the application with the specified dependencies and configurations.
 func New(
 	log *slog.Logger,
 	port int,
+
 	authService services.Auth,
 	permService services.Permissions,
+	userInfoService services.UserInfo,
+	accessibleRoles map[string][]string,
+	jwtManager *jwtmanager.JWTManager,
 ) *App {
-	gRPCServer := grpc.NewServer()
+	interceptor := NewJWTInterceptor(jwtManager, accessibleRoles)
+
+	gRPCServer := grpc.NewServer(
+		grpc.UnaryInterceptor(interceptor.Unary()),
+		grpc.StreamInterceptor(interceptor.Stream()),
+	)
 
 	auth.Register(gRPCServer, log, authService)
 	permissions.Register(gRPCServer, log, permService)
+	userinfo.Register(gRPCServer, log, userInfoService)
 
 	return &App{log, gRPCServer, authService, port}
 }
@@ -38,6 +50,7 @@ func (a *App) MustRun() {
 	}
 }
 
+// Run starts the gRPC server and listens for incoming requests on the specified port.
 func (a *App) Run() error {
 	const op = "grpcapp.Run"
 
@@ -57,6 +70,7 @@ func (a *App) Run() error {
 	return nil
 }
 
+// Stop gracefully stops the running gRPC server, allowing it to finish processing existing requests.
 func (a *App) Stop() {
 	const op = "grpcapp.Stop"
 

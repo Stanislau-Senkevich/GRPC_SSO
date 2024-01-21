@@ -9,32 +9,33 @@ import (
 	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/repository"
 	"golang.org/x/crypto/bcrypt"
 	"log/slog"
-	"time"
 )
 
 type AuthService struct {
-	log        *slog.Logger
-	repo       repository.AuthRepository
-	tokenTTL   time.Duration
-	hashSalt   string
-	signingKey []byte
+	log      *slog.Logger
+	repo     repository.AuthRepository
+	hashSalt string
+	manager  *jwt.JWTManager
 }
 
+// New creates and returns a new instance of the AuthService
 func New(
 	log *slog.Logger,
 	repo repository.AuthRepository,
-	tokenTTL time.Duration,
+	manager *jwt.JWTManager,
 	hashSalt string,
-	signingKey []byte) *AuthService {
+) *AuthService {
 	return &AuthService{
-		log:        log,
-		repo:       repo,
-		tokenTTL:   tokenTTL,
-		hashSalt:   hashSalt,
-		signingKey: signingKey,
+		log:      log,
+		repo:     repo,
+		manager:  manager,
+		hashSalt: hashSalt,
 	}
 }
 
+// SignIn authenticates a user with the provided email and password by first validating
+// the credentials against the authentication repository. If successful, it generates
+// a JWT token for the user and returns it.
 func (s *AuthService) SignIn(ctx context.Context, email, password string) (string, error) {
 	const op = "auth.SignIn"
 	log := s.log.With(
@@ -43,16 +44,15 @@ func (s *AuthService) SignIn(ctx context.Context, email, password string) (strin
 
 	log.Info("trying to log in user")
 
-	userId, err := s.repo.Login(ctx, email, password)
+	passSalted := password + s.hashSalt
+	user, err := s.repo.Login(ctx, email, passSalted)
 	if err != nil {
 		return "", fmt.Errorf("%s: %w", op, err)
 	}
 
 	log.Info("user successfully logged in")
 
-	user := models.User{ID: userId, Email: email}
-
-	token, err := jwt.NewToken(user, s.tokenTTL, s.signingKey)
+	token, err := s.manager.NewToken(user)
 	if err != nil {
 		s.log.Error("failed to generate jwt-token", sl.Err(err))
 		return "", err
@@ -63,6 +63,9 @@ func (s *AuthService) SignIn(ctx context.Context, email, password string) (strin
 	return token, nil
 }
 
+// SignUp registers a new user by first generating a password hash, and then creating
+// a new user entry in the authentication repository. It returns the assigned user ID
+// upon successful registration.
 func (s *AuthService) SignUp(ctx context.Context, user *models.User) (int64, error) {
 	const op = "auth.SignUp"
 	log := s.log.With(

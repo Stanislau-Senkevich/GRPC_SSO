@@ -11,6 +11,8 @@ type PermService struct {
 	repo repository.PermissionsRepository
 }
 
+// New creates and returns a new instance of the PermService with the provided
+// dependencies and configurations.
 func New(log *slog.Logger, repo repository.PermissionsRepository) *PermService {
 	return &PermService{log: log, repo: repo}
 }

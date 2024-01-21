@@ -2,6 +2,13 @@ package models
 
 import "time"
 
+type Role string
+
+const (
+	UserRole  Role = "user"
+	AdminRole Role = "admin"
+)
+
 type User struct {
 	ID           int64     `bson:"user_id"`
 	Email        string    `bson:"email"`
@@ -10,5 +17,5 @@ type User struct {
 	Surname      string    `bson:"surname"`
 	PassHash     string    `bson:"pass_hash"`
 	RegisteredAt time.Time `bson:"registered_at"`
-	IsAdmin      bool      `bson:"is_admin"`
+	Role         Role      `bson:"role"`
 }

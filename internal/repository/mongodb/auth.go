@@ -5,15 +5,19 @@ import (
 	"fmt"
 	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/config"
 	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/domain/models"
+	grpc_error "github.com/Stanislau-Senkevich/GRPC_SSO/internal/error"
 	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/lib/sl"
-	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/repository"
 	"go.mongodb.org/mongo-driver/bson"
 	"golang.org/x/crypto/bcrypt"
+	"golang.org/x/exp/rand"
 	"log/slog"
 )
 
-func (m *MongoRepository) Login(ctx context.Context, email, password string) (int64, error) {
-	const op = "mongo.auth.Login"
+// Login authenticates a user by verifying the provided email and password against
+// the stored user data in MongoDB. If the authentication is successful, it returns
+// the authenticated user; otherwise, it returns an error indicating the failure.
+func (m *MongoRepository) Login(ctx context.Context, email, passwordSalted string) (models.User, error) {
+	const op = "auth.mongo.Login"
 
 	var user models.User
 
@@ -30,25 +34,26 @@ func (m *MongoRepository) Login(ctx context.Context, email, password string) (in
 
 	res := coll.FindOne(ctx, filter)
 	if res.Err() != nil {
-		return -1, repository.ErrUserNotFound
+		return models.User{}, grpc_error.ErrUserNotFound
 	}
 
-	err := res.Decode(&user)
-	if err != nil {
+	if err := res.Decode(&user); err != nil {
 		log.Error("failed to decode user", sl.Err(err))
-		return -1, repository.ErrUserNotFound
+		return models.User{}, fmt.Errorf("failed to decode user: %w", err)
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(user.PassHash), []byte(password+m.hashSalt))
-	if err != nil {
-		return -1, repository.ErrUserNotFound
+	if err := bcrypt.CompareHashAndPassword([]byte(user.PassHash), []byte(passwordSalted)); err != nil {
+		return models.User{}, grpc_error.ErrUserNotFound
 	}
 
-	return user.ID, nil
+	return user, nil
 }
 
+// CreateUser creates a new user in the MongoDB database. It first checks if a user
+// with the provided email already exists, and if not, it assigns a new user ID,
+// sets the user's role, and inserts the user into the database.
 func (m *MongoRepository) CreateUser(ctx context.Context, user *models.User) (int64, error) {
-	const op = "mongo.auth.CreateUser"
+	const op = "auth.mongo.CreateUser"
 	log := m.log.With(
 		slog.String("op", op),
 	)
@@ -70,7 +75,7 @@ func (m *MongoRepository) CreateUser(ctx context.Context, user *models.User) (in
 	}()
 
 	if curEmail.RemainingBatchLength() > 0 {
-		return -1, repository.ErrUserExists
+		return -1, grpc_error.ErrUserExists
 	}
 
 	id, err := m.getNewUserId()
@@ -79,6 +84,7 @@ func (m *MongoRepository) CreateUser(ctx context.Context, user *models.User) (in
 	}
 
 	user.ID = id
+	user.Role = models.UserRole
 
 	_, err = coll.InsertOne(ctx, user)
 	if err != nil {
@@ -89,8 +95,9 @@ func (m *MongoRepository) CreateUser(ctx context.Context, user *models.User) (in
 	return id, nil
 }
 
+// getNewUserId generates a new unique user ID
 func (m *MongoRepository) getNewUserId() (int64, error) {
-	const op = "mongo.auth.getNewUserId"
+	const op = "auth.mongo.getNewUserId"
 
 	log := m.log.With(
 		slog.String("op", op),
@@ -104,6 +111,18 @@ func (m *MongoRepository) getNewUserId() (int64, error) {
 		log.Error("failed to generate new id", sl.Err(err))
 		return -1, fmt.Errorf("failed to generate new id: %w", err)
 	}
-	id++
+
+	for {
+		filter := bson.D{
+			{"user_id", id},
+		}
+
+		res := coll.FindOne(context.TODO(), filter)
+		if res.Err() != nil {
+			break
+		}
+		id = rand.Int63() + 1
+	}
+
 	return id, nil
 }

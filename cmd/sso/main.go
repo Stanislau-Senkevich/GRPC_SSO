@@ -35,12 +35,6 @@ func main() {
 	application.GRPCApp.Stop()
 
 	log.Info("grpc server shut down")
-
-	// TODO: app
-
-	// TODO: grpc start
-
-	// TODO: shutdown
 }
 
 func setupLogger(env string) *slog.Logger {

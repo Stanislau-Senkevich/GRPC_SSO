@@ -36,6 +36,9 @@ type GRPCConfig struct {
 	Timeout time.Duration `yaml:"timeout"`
 }
 
+// MustLoad reads and loads the configuration from a file specified by the fetched config path.
+// It panics if any error occurs during the process, ensuring that the application cannot proceed
+// without a valid configuration.
 func MustLoad() *Config { //nolint
 	var (
 		cfg  Config
@@ -61,6 +64,10 @@ func MustLoad() *Config { //nolint
 	return &cfg
 }
 
+// parseEnv sets up configuration parameters by binding them to environment variables using the
+// Viper library. It ensures that necessary environment variables are available and assigns their
+// values to corresponding fields in the provided Config struct. If any binding operation fails,
+// it returns an error indicating the specific failure.
 func parseEnv(cfg *Config) error {
 	if err := gotenv.Load(); err != nil {
 		return fmt.Errorf("failed to upload env file: %w", err)

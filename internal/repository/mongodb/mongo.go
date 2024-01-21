@@ -11,13 +11,16 @@ import (
 )
 
 type MongoRepository struct {
-	Db       *mongo.Client
-	Config   *config.MongoConfig
-	log      *slog.Logger
-	hashSalt string
+	Db     *mongo.Client
+	Config *config.MongoConfig
+	log    *slog.Logger
 }
 
-func InitMongoRepository(cfg *config.MongoConfig, logger *slog.Logger, hashSalt string) (
+// InitMongoRepository initializes a new MongoRepository instance with the provided
+// configuration, logger, and hash salt. It establishes a connection to the MongoDB
+// server, performs a ping to ensure connectivity, and returns the initialized
+// MongoRepository instance.
+func InitMongoRepository(cfg *config.MongoConfig, logger *slog.Logger) (
 	*MongoRepository, error) {
 	const op = "mongo.InitMongoRepository"
 
@@ -46,9 +49,8 @@ func InitMongoRepository(cfg *config.MongoConfig, logger *slog.Logger, hashSalt 
 	log.Info("pinged successfully")
 
 	return &MongoRepository{
-		Db:       db,
-		Config:   cfg,
-		log:      logger,
-		hashSalt: hashSalt,
+		Db:     db,
+		Config: cfg,
+		log:    logger,
 	}, nil
 }

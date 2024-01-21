@@ -5,21 +5,22 @@ import (
 	"fmt"
 	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/config"
 	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/domain/models"
+	grpc_error "github.com/Stanislau-Senkevich/GRPC_SSO/internal/error"
 	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/lib/sl"
-	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/repository"
 	"go.mongodb.org/mongo-driver/bson"
 	"log/slog"
 )
 
+// IsAdmin checks if the user with the provided user ID has admin privileges.
+// It queries the MongoDB database to retrieve the user information and determines
+// if the user has the admin role.
 func (m *MongoRepository) IsAdmin(ctx context.Context, userId int64) (bool, error) {
 	var user models.User
-	const op = "mongo.permissions.IsAdmin"
+	const op = "permissions.mongo.IsAdmin"
 
 	log := m.log.With(
 		slog.String("op", op),
 	)
-
-	log.Info("checking if user is admin", slog.Int64("user_id", userId))
 
 	filter := bson.D{{"user_id", userId}}
 
@@ -28,14 +29,13 @@ func (m *MongoRepository) IsAdmin(ctx context.Context, userId int64) (bool, erro
 
 	res := coll.FindOne(ctx, filter)
 	if res.Err() != nil {
-		return false, repository.ErrUserNotFound
+		return false, grpc_error.ErrUserNotFound
 	}
 
-	err := res.Decode(&user)
-	if err != nil {
+	if err := res.Decode(&user); err != nil {
 		log.Error("failed to decode user", sl.Err(err))
 		return false, fmt.Errorf("failed to decode user: %w", err)
 	}
 
-	return user.IsAdmin, nil
+	return string(user.Role) == string(models.AdminRole), nil
 }

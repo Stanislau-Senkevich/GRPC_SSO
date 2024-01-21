@@ -2,14 +2,7 @@ package repository
 
 import (
 	"context"
-	"errors"
-
 	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/domain/models"
-)
-
-var (
-	ErrUserExists   = errors.New("user already exists")
-	ErrUserNotFound = errors.New("user not found")
 )
 
 type Repository interface {
@@ -19,7 +12,7 @@ type Repository interface {
 }
 
 type AuthRepository interface {
-	Login(ctx context.Context, email, passHash string) (int64, error)
+	Login(ctx context.Context, email, passHash string) (models.User, error)
 	CreateUser(ctx context.Context, user *models.User) (int64, error)
 }
 
@@ -28,4 +21,8 @@ type PermissionsRepository interface {
 }
 
 type UserInfoRepository interface {
+	GetUserInfo(ctx context.Context, userID int64) (models.User, error)
+	UpdateUserInfo(ctx context.Context, userID int64, updatedUser *models.User) error
+	ChangePassword(ctx context.Context, userID int64, oldPassword, newPasswordHash string) error
+	DeleteUser(ctx context.Context, userID int64) error
 }
