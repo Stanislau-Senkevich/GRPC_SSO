@@ -14,7 +14,7 @@ import (
 type UserInfoService struct {
 	log      *slog.Logger
 	repo     repository.UserInfoRepository
-	manager  *jwtmanager.JWTManager
+	manager  *jwtmanager.Manager
 	hashSalt string
 }
 
@@ -22,7 +22,7 @@ type UserInfoService struct {
 func New(
 	log *slog.Logger,
 	repo repository.UserInfoRepository,
-	manager *jwtmanager.JWTManager,
+	manager *jwtmanager.Manager,
 	hashSalt string,
 ) *UserInfoService {
 	return &UserInfoService{

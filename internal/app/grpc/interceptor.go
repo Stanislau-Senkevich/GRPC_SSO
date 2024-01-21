@@ -11,14 +11,14 @@ import (
 )
 
 type JWTInterceptor struct {
-	manager         *jwt.JWTManager
+	manager         *jwt.Manager
 	accessibleRoles map[string][]string
 }
 
 // NewJWTInterceptor creates a new instance of JWTInterceptor with the provided JWT manager and accessibleRoles map.
 // The JWTInterceptor is used as a gRPC server interceptor to validate JWT tokens and enforce role-based access control.
 func NewJWTInterceptor(
-	manager *jwt.JWTManager,
+	manager *jwt.Manager,
 	accessibleRoles map[string][]string,
 ) *JWTInterceptor {
 	return &JWTInterceptor{manager: manager, accessibleRoles: accessibleRoles}

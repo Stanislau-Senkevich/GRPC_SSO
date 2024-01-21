@@ -3,7 +3,7 @@ package userinfo
 import (
 	"context"
 	"errors"
-	grpc_error "github.com/Stanislau-Senkevich/GRPC_SSO/internal/error"
+	grpcerror "github.com/Stanislau-Senkevich/GRPC_SSO/internal/error"
 	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/lib/sl"
 	ssov1 "github.com/Stanislau-Senkevich/protocols/gen/go/sso"
 	"google.golang.org/grpc/codes"
@@ -25,9 +25,9 @@ func (s *serverAPI) GetUserInfo(
 	)
 
 	user, err := s.userInfo.GetUserInfo(ctx)
-	if errors.Is(err, grpc_error.ErrUserNotFound) {
-		log.Info(grpc_error.ErrUserNotFound.Error())
-		return nil, status.Error(codes.InvalidArgument, grpc_error.ErrUserNotFound.Error())
+	if errors.Is(err, grpcerror.ErrUserNotFound) {
+		log.Info(grpcerror.ErrUserNotFound.Error())
+		return nil, status.Error(codes.InvalidArgument, grpcerror.ErrUserNotFound.Error())
 	}
 	if err != nil {
 		log.Error("failed to get user info", sl.Err(err))

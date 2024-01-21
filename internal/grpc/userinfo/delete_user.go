@@ -3,7 +3,7 @@ package userinfo
 import (
 	"context"
 	"errors"
-	grpc_error "github.com/Stanislau-Senkevich/GRPC_SSO/internal/error"
+	grpcerror "github.com/Stanislau-Senkevich/GRPC_SSO/internal/error"
 	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/lib/sl"
 	ssov1 "github.com/Stanislau-Senkevich/protocols/gen/go/sso"
 	"google.golang.org/grpc/codes"
@@ -26,9 +26,9 @@ func (s *serverAPI) DeleteUser(
 	log.Info("deleting user", slog.Int64("user_id", req.GetUserId()))
 
 	err := s.userInfo.DeleteUser(ctx, req.GetUserId())
-	if errors.Is(err, grpc_error.ErrUserNotFound) {
-		log.Info(grpc_error.ErrUserNotFound.Error())
-		return nil, status.Error(codes.InvalidArgument, grpc_error.ErrUserNotFound.Error())
+	if errors.Is(err, grpcerror.ErrUserNotFound) {
+		log.Info(grpcerror.ErrUserNotFound.Error())
+		return nil, status.Error(codes.InvalidArgument, grpcerror.ErrUserNotFound.Error())
 	}
 	if err != nil {
 		log.Error("failed to delete user", sl.Err(err),

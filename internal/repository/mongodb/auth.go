@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/config"
 	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/domain/models"
-	grpc_error "github.com/Stanislau-Senkevich/GRPC_SSO/internal/error"
+	grpcerror "github.com/Stanislau-Senkevich/GRPC_SSO/internal/error"
 	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/lib/sl"
 	"go.mongodb.org/mongo-driver/bson"
 	"golang.org/x/crypto/bcrypt"
@@ -34,7 +34,7 @@ func (m *MongoRepository) Login(ctx context.Context, email, passwordSalted strin
 
 	res := coll.FindOne(ctx, filter)
 	if res.Err() != nil {
-		return models.User{}, grpc_error.ErrUserNotFound
+		return models.User{}, grpcerror.ErrUserNotFound
 	}
 
 	if err := res.Decode(&user); err != nil {
@@ -43,7 +43,7 @@ func (m *MongoRepository) Login(ctx context.Context, email, passwordSalted strin
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.PassHash), []byte(passwordSalted)); err != nil {
-		return models.User{}, grpc_error.ErrUserNotFound
+		return models.User{}, grpcerror.ErrUserNotFound
 	}
 
 	return user, nil
@@ -75,7 +75,7 @@ func (m *MongoRepository) CreateUser(ctx context.Context, user *models.User) (in
 	}()
 
 	if curEmail.RemainingBatchLength() > 0 {
-		return -1, grpc_error.ErrUserExists
+		return -1, grpcerror.ErrUserExists
 	}
 
 	id, err := m.getNewUserId()

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/config"
 	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/domain/models"
-	grpc_error "github.com/Stanislau-Senkevich/GRPC_SSO/internal/error"
+	grpcerror "github.com/Stanislau-Senkevich/GRPC_SSO/internal/error"
 	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/lib/sl"
 	"go.mongodb.org/mongo-driver/bson"
 	"golang.org/x/crypto/bcrypt"
@@ -32,7 +32,7 @@ func (m *MongoRepository) GetUserInfo(ctx context.Context, userID int64) (models
 
 	singleRes := coll.FindOne(ctx, filter)
 	if singleRes.Err() != nil {
-		return models.User{}, grpc_error.ErrUserNotFound
+		return models.User{}, grpcerror.ErrUserNotFound
 	}
 
 	if err := singleRes.Decode(&res); err != nil {
@@ -70,7 +70,7 @@ func (m *MongoRepository) UpdateUserInfo(
 
 	res := coll.FindOne(ctx, filter)
 	if res.Err() != nil {
-		return grpc_error.ErrUserNotFound
+		return grpcerror.ErrUserNotFound
 	}
 
 	if err := res.Decode(&user); err != nil {
@@ -126,7 +126,7 @@ func (m *MongoRepository) ChangePassword(
 
 	res := coll.FindOne(ctx, filter)
 	if res.Err() != nil {
-		return grpc_error.ErrUserNotFound
+		return grpcerror.ErrUserNotFound
 	}
 
 	if err := res.Decode(&user); err != nil {
@@ -135,8 +135,8 @@ func (m *MongoRepository) ChangePassword(
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.PassHash), []byte(oldPasswordSalted)); err != nil {
-		log.Info(grpc_error.ErrInvalidPassword.Error(), slog.Int64("user_id", userID))
-		return grpc_error.ErrInvalidPassword
+		log.Info(grpcerror.ErrInvalidPassword.Error(), slog.Int64("user_id", userID))
+		return grpcerror.ErrInvalidPassword
 	}
 
 	update := bson.M{
@@ -168,7 +168,7 @@ func (m *MongoRepository) DeleteUser(ctx context.Context, userID int64) error {
 	}
 
 	if res := coll.FindOne(ctx, filter); res.Err() != nil {
-		return grpc_error.ErrUserNotFound
+		return grpcerror.ErrUserNotFound
 	}
 
 	if _, err := coll.DeleteOne(ctx, filter); err != nil {

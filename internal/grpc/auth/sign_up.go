@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/domain/models"
-	grpc_error "github.com/Stanislau-Senkevich/GRPC_SSO/internal/error"
+	grpcerror "github.com/Stanislau-Senkevich/GRPC_SSO/internal/error"
 	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/lib/sl"
 	ssov1 "github.com/Stanislau-Senkevich/protocols/gen/go/sso"
 	"github.com/badoux/checkmail"
@@ -41,8 +41,8 @@ func (s *serverAPI) SignUp(
 
 	userId, err := s.auth.SignUp(ctx, preUser)
 	if err != nil {
-		if errors.Is(err, grpc_error.ErrUserExists) {
-			return nil, status.Error(codes.InvalidArgument, grpc_error.ErrUserExists.Error())
+		if errors.Is(err, grpcerror.ErrUserExists) {
+			return nil, status.Error(codes.InvalidArgument, grpcerror.ErrUserExists.Error())
 		}
 		log.Error("failed to create user", sl.Err(err))
 		return nil, status.Error(codes.Internal, "internal error: %s")

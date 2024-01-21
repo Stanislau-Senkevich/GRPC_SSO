@@ -3,7 +3,7 @@ package auth
 import (
 	"context"
 	"errors"
-	grpc_error "github.com/Stanislau-Senkevich/GRPC_SSO/internal/error"
+	grpcerror "github.com/Stanislau-Senkevich/GRPC_SSO/internal/error"
 	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/lib/sl"
 	ssov1 "github.com/Stanislau-Senkevich/protocols/gen/go/sso"
 	"github.com/badoux/checkmail"
@@ -29,8 +29,8 @@ func (s *serverAPI) SignIn(
 
 	token, err := s.auth.SignIn(ctx, req.GetEmail(), req.GetPassword())
 	if err != nil {
-		if errors.Is(err, grpc_error.ErrUserNotFound) {
-			return nil, status.Error(codes.InvalidArgument, grpc_error.ErrUserNotFound.Error())
+		if errors.Is(err, grpcerror.ErrUserNotFound) {
+			return nil, status.Error(codes.InvalidArgument, grpcerror.ErrUserNotFound.Error())
 		}
 		log.Error("failed to log in user", sl.Err(err))
 		return nil, status.Error(codes.Internal, "internal error")

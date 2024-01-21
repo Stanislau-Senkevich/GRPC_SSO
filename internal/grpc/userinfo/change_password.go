@@ -3,7 +3,7 @@ package userinfo
 import (
 	"context"
 	"errors"
-	grpc_error "github.com/Stanislau-Senkevich/GRPC_SSO/internal/error"
+	grpcerror "github.com/Stanislau-Senkevich/GRPC_SSO/internal/error"
 	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/lib/sl"
 	ssov1 "github.com/Stanislau-Senkevich/protocols/gen/go/sso"
 	"google.golang.org/grpc/codes"
@@ -36,12 +36,12 @@ func (s *serverAPI) ChangePassword(
 	}
 
 	err := s.userInfo.ChangePassword(ctx, req.OldPassword, req.GetNewPassword())
-	if errors.Is(err, grpc_error.ErrUserNotFound) {
-		log.Info(grpc_error.ErrUserNotFound.Error())
-		return nil, status.Error(codes.InvalidArgument, grpc_error.ErrUserNotFound.Error())
+	if errors.Is(err, grpcerror.ErrUserNotFound) {
+		log.Info(grpcerror.ErrUserNotFound.Error())
+		return nil, status.Error(codes.InvalidArgument, grpcerror.ErrUserNotFound.Error())
 	}
-	if errors.Is(err, grpc_error.ErrInvalidPassword) {
-		return nil, status.Error(codes.InvalidArgument, grpc_error.ErrInvalidPassword.Error())
+	if errors.Is(err, grpcerror.ErrInvalidPassword) {
+		return nil, status.Error(codes.InvalidArgument, grpcerror.ErrInvalidPassword.Error())
 	}
 	if err != nil {
 		log.Error("failed to change user's password", sl.Err(err))

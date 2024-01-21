@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/config"
 	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/domain/models"
-	grpc_error "github.com/Stanislau-Senkevich/GRPC_SSO/internal/error"
+	grpcerror "github.com/Stanislau-Senkevich/GRPC_SSO/internal/error"
 	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/lib/sl"
 	"go.mongodb.org/mongo-driver/bson"
 	"log/slog"
@@ -29,7 +29,7 @@ func (m *MongoRepository) IsAdmin(ctx context.Context, userId int64) (bool, erro
 
 	res := coll.FindOne(ctx, filter)
 	if res.Err() != nil {
-		return false, grpc_error.ErrUserNotFound
+		return false, grpcerror.ErrUserNotFound
 	}
 
 	if err := res.Decode(&user); err != nil {

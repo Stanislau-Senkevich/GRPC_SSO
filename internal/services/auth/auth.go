@@ -15,14 +15,14 @@ type AuthService struct {
 	log      *slog.Logger
 	repo     repository.AuthRepository
 	hashSalt string
-	manager  *jwt.JWTManager
+	manager  *jwt.Manager
 }
 
 // New creates and returns a new instance of the AuthService
 func New(
 	log *slog.Logger,
 	repo repository.AuthRepository,
-	manager *jwt.JWTManager,
+	manager *jwt.Manager,
 	hashSalt string,
 ) *AuthService {
 	return &AuthService{

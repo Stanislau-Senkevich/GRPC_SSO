@@ -29,7 +29,7 @@ func New(
 	permService services.Permissions,
 	userInfoService services.UserInfo,
 	accessibleRoles map[string][]string,
-	jwtManager *jwtmanager.JWTManager,
+	jwtManager *jwtmanager.Manager,
 ) *App {
 	interceptor := NewJWTInterceptor(jwtManager, accessibleRoles)
 
