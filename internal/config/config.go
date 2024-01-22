@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/ilyakaznacheev/cleanenv"
 	"github.com/spf13/viper"
-	"github.com/subosito/gotenv"
 	"os"
 	"time"
 )
@@ -41,12 +40,14 @@ type GRPCConfig struct {
 // It panics if any error occurs during the process, ensuring that the application cannot proceed
 // without a valid configuration.
 func MustLoad() *Config { //nolint
+
 	path := fetchConfigPath()
+
 	if path == "" {
 		panic(fmt.Errorf("config path is empty"))
 	}
 
-	if err := BindEnv(""); err != nil {
+	if err := BindEnv(); err != nil {
 		panic(fmt.Errorf("failed to bind the enviroment: %w", err))
 	}
 
@@ -85,16 +86,10 @@ func parseEnv(cfg *Config) error {
 	return nil
 }
 
-func BindEnv(path string) error {
-	err := gotenv.Load(path)
-
-	if path == "" {
-		err = gotenv.Load()
-	}
-
-	if err != nil {
-		return fmt.Errorf("failed to bind the enviroment: %w", err)
-	}
+func BindEnv() error {
+	//if err := gotenv.Load(); err != nil {
+	//	return fmt.Errorf("failed to parse .env file: %w", err)
+	//}
 
 	if err := viper.BindEnv("mongo_user"); err != nil {
 		return fmt.Errorf("failed to set up mongo_user: %w", err)
@@ -118,7 +113,7 @@ func BindEnv(path string) error {
 func fetchConfigPath() string {
 	var res string
 
-	// --config="path/to/config.yaml"
+	//--config="path/to/config.yaml"
 	flag.StringVar(&res, "config", "", "path to config file")
 	flag.Parse()
 

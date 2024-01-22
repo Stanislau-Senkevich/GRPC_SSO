@@ -24,7 +24,12 @@ func TestSignInSignUp_HappyPath(t *testing.T) {
 
 	loginTime := time.Now()
 
-	parsedToken, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+	fmt.Println(st.Cfg.SigningKey)
+
+	parsedToken, err := jwt.Parse(token, func(tkn *jwt.Token) (interface{}, error) {
+		if _, ok := tkn.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", tkn.Header["alg"]) //nolint
+		}
 		return st.Cfg.SigningKey, nil
 	})
 	require.NoError(t, err)
