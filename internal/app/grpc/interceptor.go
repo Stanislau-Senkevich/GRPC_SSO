@@ -2,6 +2,7 @@ package grpcapp
 
 import (
 	"context"
+	grpcerror "github.com/Stanislau-Senkevich/GRPC_SSO/internal/error"
 	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/lib/jwt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -39,17 +40,17 @@ func (i *JWTInterceptor) authorize(ctx context.Context, method string) error {
 
 	values := md["authorization"]
 	if len(values) == 0 {
-		return status.Errorf(codes.Unauthenticated, "authorization token is not provided")
+		return status.Errorf(codes.Unauthenticated, grpcerror.ErrNoToken.Error())
 	}
 
 	if parts := strings.Fields(values[0]); len(parts) < 2 {
-		return status.Error(codes.Unauthenticated, "authorization token is invalid")
+		return status.Error(codes.Unauthenticated, grpcerror.ErrInvalidToken.Error())
 	}
 
 	accessToken := strings.Fields(values[0])[1]
 	claims, err := i.manager.ParseToken(accessToken)
 	if err != nil {
-		return status.Errorf(codes.Unauthenticated, "access token is invalid: %v", err)
+		return status.Errorf(codes.Unauthenticated, grpcerror.ErrInvalidToken.Error())
 	}
 
 	for _, role := range i.accessibleRoles[method] {
@@ -58,7 +59,7 @@ func (i *JWTInterceptor) authorize(ctx context.Context, method string) error {
 		}
 	}
 
-	return status.Errorf(codes.PermissionDenied, "no permission to access this RPC")
+	return status.Errorf(codes.PermissionDenied, grpcerror.ErrForbidden.Error())
 }
 
 // Unary returns a gRPC UnaryServerInterceptor that performs authorization checks before allowing the execution

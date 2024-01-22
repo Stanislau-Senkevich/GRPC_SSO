@@ -11,7 +11,8 @@ import (
 )
 
 const (
-	UserCollection = "user"
+	UserCollection     = "user"
+	SequenceCollection = "sequence"
 )
 
 type Config struct {
@@ -40,14 +41,20 @@ type GRPCConfig struct {
 // It panics if any error occurs during the process, ensuring that the application cannot proceed
 // without a valid configuration.
 func MustLoad() *Config { //nolint
-	var (
-		cfg  Config
-		path = fetchConfigPath()
-	)
-
+	path := fetchConfigPath()
 	if path == "" {
 		panic(fmt.Errorf("config path is empty"))
 	}
+
+	if err := BindEnv(""); err != nil {
+		panic(fmt.Errorf("failed to bind the enviroment: %w", err))
+	}
+
+	return MustLoadByPath(path)
+}
+
+func MustLoadByPath(path string) *Config {
+	var cfg Config
 
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		panic(fmt.Errorf("config file does not exist: %s", path))
@@ -69,8 +76,24 @@ func MustLoad() *Config { //nolint
 // values to corresponding fields in the provided Config struct. If any binding operation fails,
 // it returns an error indicating the specific failure.
 func parseEnv(cfg *Config) error {
-	if err := gotenv.Load(); err != nil {
-		return fmt.Errorf("failed to upload env file: %w", err)
+
+	cfg.Mongo.User = viper.GetString("mongo_user")
+	cfg.Mongo.Password = viper.GetString("mongo_password")
+	cfg.HashSalt = viper.GetString("hash_salt")
+	cfg.SigningKey = []byte(viper.GetString("signing_key"))
+
+	return nil
+}
+
+func BindEnv(path string) error {
+	err := gotenv.Load(path)
+
+	if path == "" {
+		err = gotenv.Load()
+	}
+
+	if err != nil {
+		return fmt.Errorf("failed to bind the enviroment: %w", err)
 	}
 
 	if err := viper.BindEnv("mongo_user"); err != nil {
@@ -88,11 +111,6 @@ func parseEnv(cfg *Config) error {
 	if err := viper.BindEnv("signing_key"); err != nil {
 		return fmt.Errorf("failed to set up signing_key: %w", err)
 	}
-
-	cfg.Mongo.User = viper.GetString("mongo_user")
-	cfg.Mongo.Password = viper.GetString("mongo_password")
-	cfg.HashSalt = viper.GetString("hash_salt")
-	cfg.SigningKey = []byte(viper.GetString("signing_key"))
 
 	return nil
 }

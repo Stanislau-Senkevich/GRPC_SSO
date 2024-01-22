@@ -9,7 +9,6 @@ import (
 	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/lib/sl"
 	"go.mongodb.org/mongo-driver/bson"
 	"golang.org/x/crypto/bcrypt"
-	"golang.org/x/exp/rand"
 	"log/slog"
 )
 
@@ -97,32 +96,31 @@ func (m *MongoRepository) CreateUser(ctx context.Context, user *models.User) (in
 
 // getNewUserId generates a new unique user ID
 func (m *MongoRepository) getNewUserId() (int64, error) {
-	const op = "auth.mongo.getNewUserId"
-
-	log := m.log.With(
-		slog.String("op", op),
-	)
+	var seq models.Sequence
 
 	coll := m.Db.Database(m.Config.DBName).Collection(
-		m.Config.Collections[config.UserCollection])
+		m.Config.Collections[config.SequenceCollection])
 
-	id, err := coll.CountDocuments(context.TODO(), bson.D{})
+	filter := bson.D{
+		{"collection_name", config.UserCollection},
+	}
+
+	update := bson.D{
+		{"$inc", bson.D{
+			{"counter", 1},
+		},
+		},
+	}
+
+	res := coll.FindOneAndUpdate(context.TODO(), filter, update)
+	if res.Err() != nil {
+		return -1, fmt.Errorf("failed to get id: %w", res.Err())
+	}
+
+	err := res.Decode(&seq)
 	if err != nil {
-		log.Error("failed to generate new id", sl.Err(err))
-		return -1, fmt.Errorf("failed to generate new id: %w", err)
+		return -1, fmt.Errorf("failed to decode sequence: %w", err)
 	}
 
-	for {
-		filter := bson.D{
-			{"user_id", id},
-		}
-
-		res := coll.FindOne(context.TODO(), filter)
-		if res.Err() != nil {
-			break
-		}
-		id = rand.Int63() + 1
-	}
-
-	return id, nil
+	return seq.Counter, nil
 }

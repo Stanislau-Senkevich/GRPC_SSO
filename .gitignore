@@ -1,4 +1,5 @@
 .idea
 /config/local.yaml
+/config/local_tests.yaml
 .env
 cmd/local

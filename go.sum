@@ -1,11 +1,11 @@
 github.com/BurntSushi/toml v1.2.1 h1:9F2/+DoOYIOksmaJFPw1tGFy1eDnIJXg+UHjuD8lTak=
 github.com/BurntSushi/toml v1.2.1/go.mod h1:CxXYINrC8qIiEnFrOxCa7Jy5BFHlXnUU2pbicEuybxQ=
-github.com/Stanislau-Senkevich/protocols v1.0.1 h1:y/a3mMcT7YVgdw3lVQN/8i6XN5B12jJwQpFHM8PBQkw=
-github.com/Stanislau-Senkevich/protocols v1.0.1/go.mod h1:5YY2LiwzTkWN7TAN7QvlH8p8uhHjCru7WSKBbOyDgNc=
 github.com/Stanislau-Senkevich/protocols v1.0.2 h1:yqOkuuu/lq/0BYUGX7b2KoCKoVUb0m9+RU4Jiu5S1l8=
 github.com/Stanislau-Senkevich/protocols v1.0.2/go.mod h1:5YY2LiwzTkWN7TAN7QvlH8p8uhHjCru7WSKBbOyDgNc=
 github.com/badoux/checkmail v1.2.4 h1:4zMjdYDjE2Q7xF06VNfyN8P9JGU7epLjNb+Yu5OThVI=
 github.com/badoux/checkmail v1.2.4/go.mod h1:XroCOBU5zzZJcLvgwU15I+2xXyCdTWXyR9MGfRhBYy0=
+github.com/brianvoe/gofakeit v3.18.0+incompatible h1:wDOmHc9DLG4nRjUVVaxA+CEglKOW72Y5+4WNxUIkjM8=
+github.com/brianvoe/gofakeit v3.18.0+incompatible/go.mod h1:kfwdRA90vvNhPutZWfH7WPaDzUjz+CZFqG+rPkOjGOc=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc h1:U9qPSI2PIWSS1VwoXQT9A3Wy9MM3WgvqSxFWenqJduM=
