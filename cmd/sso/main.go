@@ -22,7 +22,7 @@ func main() {
 
 	log.Info("starting sso application", slog.Any("config", cfg))
 
-	application := app.New(log, cfg.GRPC.Port, cfg, cfg.TokenTTL)
+	application := app.New(log, cfg, cfg.TokenTTL)
 
 	go application.GRPCApp.MustRun()
 

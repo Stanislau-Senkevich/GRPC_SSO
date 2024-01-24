@@ -20,7 +20,6 @@ type App struct {
 // New creates a new instance of the application with the provided configuration and dependencies.
 func New(
 	log *slog.Logger,
-	grpcPort int,
 	cfg *config.Config,
 	tokenTTL time.Duration,
 ) *App {

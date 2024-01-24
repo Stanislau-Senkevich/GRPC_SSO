@@ -6,6 +6,7 @@ mongo_config:
   conn_string: "mongodb+srv://%s:%s@grpcmicroservicescluste.6q1e9je.mongodb.net/?retryWrites=true&w=majority"
   collections:
     user: "user"
+    sequence: "sequence"
 
 grpc:
   port: 44044

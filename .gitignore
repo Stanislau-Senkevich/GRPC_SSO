@@ -3,3 +3,4 @@
 /config/local_tests.yaml
 .env
 cmd/local
+digitalocean-kubeconfig.yaml
