@@ -14,10 +14,9 @@ import (
 )
 
 type App struct {
-	log         *slog.Logger
-	gRPCServer  *grpc.Server
-	authService services.Auth
-	gRPCConfig  *config.GRPCConfig
+	log        *slog.Logger
+	gRPCServer *grpc.Server
+	gRPCConfig *config.GRPCConfig
 }
 
 // New creates a new instance of the application with the specified dependencies and configurations.
@@ -43,7 +42,7 @@ func New(
 	permissions.Register(gRPCServer, log, permService)
 	userinfo.Register(gRPCServer, log, userInfoService)
 
-	return &App{log, gRPCServer, authService, gRPCConfig}
+	return &App{log, gRPCServer, gRPCConfig}
 }
 
 func (a *App) MustRun() {

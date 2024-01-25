@@ -91,3 +91,22 @@ func (m *Manager) GetClaims(ctx context.Context) (jwt.MapClaims, error) {
 
 	return claims, nil
 }
+
+func (m *Manager) GetUserIDFromContext(ctx context.Context) (int64, error) {
+	claims, err := m.GetClaims(ctx)
+	if err != nil {
+		return -1, err
+	}
+
+	id, ok := claims["user_id"]
+	if !ok {
+		return -1, grpcerror.ErrTokenClaims
+	}
+
+	idFloat, ok := id.(float64)
+	if !ok {
+		return -1, grpcerror.ErrTokenClaims
+	}
+
+	return int64(idFloat), nil
+}

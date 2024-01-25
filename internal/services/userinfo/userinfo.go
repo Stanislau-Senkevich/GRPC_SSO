@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/domain/models"
+	grpcerror "github.com/Stanislau-Senkevich/GRPC_SSO/internal/error"
 	jwtmanager "github.com/Stanislau-Senkevich/GRPC_SSO/internal/lib/jwt"
 	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/lib/sl"
 	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/repository"
@@ -37,7 +38,7 @@ func New(
 // It extracts the user ID from the context, then delegates the retrieval to the
 // GetUserInfoByID method.
 func (s *UserInfoService) GetUserInfo(ctx context.Context) (models.User, error) {
-	userID, err := s.getUserIDFromToken(ctx)
+	userID, err := s.manager.GetUserIDFromContext(ctx)
 	if err != nil {
 		return models.User{}, err
 	}
@@ -55,7 +56,7 @@ func (s *UserInfoService) GetUserInfoByID(ctx context.Context, userID int64) (mo
 func (s *UserInfoService) UpdateUserInfo(
 	ctx context.Context,
 	updatedUser *models.User) error {
-	userID, err := s.getUserIDFromToken(ctx)
+	userID, err := s.manager.GetUserIDFromContext(ctx)
 	if err != nil {
 		return err
 	}
@@ -84,7 +85,7 @@ func (s *UserInfoService) ChangePassword(
 		log.Error("failed to generate password hash", sl.Err(err))
 	}
 
-	userID, err := s.getUserIDFromToken(ctx)
+	userID, err := s.manager.GetUserIDFromContext(ctx)
 	if err != nil {
 		return err
 	}
@@ -96,27 +97,51 @@ func (s *UserInfoService) DeleteUser(ctx context.Context, userID int64) error {
 	return s.repo.DeleteUser(ctx, userID)
 }
 
-// getUserIDFromToken extracts the user ID from the JWT token claims in the provided context.
-// It delegates the retrieval of claims to the JWT manager and logs relevant information
-// using structured logging.
-func (s *UserInfoService) getUserIDFromToken(ctx context.Context) (int64, error) {
-	const op = "userinfo.service.getUserIDFromToken"
+func (s *UserInfoService) AddFamily(ctx context.Context, familyID int64, userID int64) error {
+	const op = "userinfo.service.AddFamily"
 
 	log := s.log.With(
 		slog.String("op", op),
 	)
 
-	claims, err := s.manager.GetClaims(ctx)
+	user, err := s.repo.GetUserInfo(ctx, userID)
 	if err != nil {
-		log.Error("failed to get token claims", sl.Err(err))
-		return -1, fmt.Errorf("failed to get token claims: %w", err)
+		return fmt.Errorf("%s: %w", op, err)
 	}
 
-	userID, ok := claims["user_id"]
-	if !ok {
-		log.Error("failed to get user id from token claims")
-		return -1, fmt.Errorf("failed to get user id from token claims")
+	if isUserInFamily(user.FamilyIDs, familyID) {
+		log.Warn(grpcerror.ErrUserInFamily.Error())
+		return grpcerror.ErrUserInFamily
 	}
 
-	return int64(userID.(float64)), nil
+	return s.repo.AddFamily(ctx, &user, familyID)
+}
+
+func (s *UserInfoService) DeleteFamily(ctx context.Context, familyID int64, userID int64) error {
+	const op = "userinfo.service.DeleteFamily"
+
+	log := s.log.With(
+		slog.String("op", op),
+	)
+
+	user, err := s.repo.GetUserInfo(ctx, userID)
+	if err != nil {
+		return fmt.Errorf("%s: %w", op, err)
+	}
+
+	if !isUserInFamily(user.FamilyIDs, familyID) {
+		log.Warn(grpcerror.ErrUserNotInFamily.Error())
+		return grpcerror.ErrUserNotInFamily
+	}
+
+	return s.repo.DeleteFamily(ctx, &user, familyID)
+}
+
+func isUserInFamily(families []int64, familyID int64) bool {
+	for _, f := range families {
+		if f == familyID {
+			return true
+		}
+	}
+	return false
 }

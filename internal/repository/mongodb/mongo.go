@@ -16,10 +16,6 @@ type MongoRepository struct {
 	log    *slog.Logger
 }
 
-type tempLog struct {
-	log string `bson:"log"`
-}
-
 // InitMongoRepository initializes a new MongoRepository instance with the provided
 // configuration, logger, and hash salt. It establishes a connection to the MongoDB
 // server, performs a ping to ensure connectivity, and returns the initialized

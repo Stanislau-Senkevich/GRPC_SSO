@@ -179,6 +179,82 @@ func (m *MongoRepository) DeleteUser(ctx context.Context, userID int64) error {
 	return nil
 }
 
+func (m *MongoRepository) AddFamily(ctx context.Context, user *models.User, familyID int64) error {
+	const op = "userinfo.mongo.AddFamily"
+
+	log := m.log.With(
+		slog.String("op", op),
+	)
+
+	user.FamilyIDs = append(user.FamilyIDs, familyID)
+
+	coll := m.Db.Database(m.Config.DBName).Collection(
+		m.Config.Collections[config.UserCollection])
+
+	filter := bson.D{
+		{"user_id", user.ID},
+	}
+
+	update := bson.D{
+		{"$set", bson.D{
+			{"family_ids", user.FamilyIDs}},
+		},
+	}
+
+	_, err := coll.UpdateOne(ctx, filter, update)
+	if err != nil {
+		log.Error("failed to add family", sl.Err(err))
+		return fmt.Errorf("%s: %w", op, err)
+	}
+
+	return nil
+}
+
+func (m *MongoRepository) DeleteFamily(ctx context.Context, user *models.User, familyID int64) error {
+	const op = "userinfo.mongo.DeleteFamily"
+
+	log := m.log.With(
+		slog.String("op", op),
+	)
+
+	newFam := removeFamily(user.FamilyIDs, familyID)
+
+	coll := m.Db.Database(m.Config.DBName).Collection(
+		m.Config.Collections[config.UserCollection])
+
+	filter := bson.D{
+		{"user_id", user.ID},
+	}
+
+	update := bson.D{
+		{"$set", bson.D{
+			{"family_ids", newFam}},
+		},
+	}
+
+	_, err := coll.UpdateOne(ctx, filter, update)
+	if err != nil {
+		log.Error("failed to delete family", sl.Err(err))
+		return fmt.Errorf("%s: %w", op, err)
+	}
+
+	return nil
+}
+
+func removeFamily(families []int64, familyID int64) []int64 {
+	if len(families) == 1 {
+		return []int64{}
+	}
+
+	for i, fID := range families {
+		if fID == familyID {
+			return append(families[:i], families[i+1:]...)
+		}
+	}
+
+	return nil
+}
+
 // checkUpdateInfo ensures that the provided updateInfo object contains valid
 // information for updating a user. If any field in updateInfo is empty, it is
 // replaced with the corresponding field from the original user object.

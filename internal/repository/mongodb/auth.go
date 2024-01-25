@@ -77,7 +77,7 @@ func (m *MongoRepository) CreateUser(ctx context.Context, user *models.User) (in
 		return -1, grpcerror.ErrUserExists
 	}
 
-	id, err := m.getNewUserId()
+	id, err := m.getNewUniqueUserId()
 	if err != nil {
 		return -1, err
 	}
@@ -94,15 +94,15 @@ func (m *MongoRepository) CreateUser(ctx context.Context, user *models.User) (in
 	return id, nil
 }
 
-// getNewUserId generates a new unique user ID
-func (m *MongoRepository) getNewUserId() (int64, error) {
+// getNewUniqueUserId generates a new unique user ID
+func (m *MongoRepository) getNewUniqueUserId() (int64, error) {
 	var seq models.Sequence
 
 	coll := m.Db.Database(m.Config.DBName).Collection(
 		m.Config.Collections[config.SequenceCollection])
 
 	filter := bson.D{
-		{"collection_name", config.UserCollection},
+		{"collection_name", m.Config.Collections[config.UserCollection]},
 	}
 
 	update := bson.D{

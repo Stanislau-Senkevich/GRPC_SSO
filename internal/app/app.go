@@ -35,12 +35,14 @@ func New(
 	userInfoService := userinfo.New(log, repo, jwtManager, cfg.HashSalt)
 
 	accessibleRoles := map[string][]string{
+		"/permissions.Permissions/IsAdmin":   {"admin"},
 		"/userinfo.UserInfo/GetUserInfo":     {"user", "admin"},
 		"/userinfo.UserInfo/UpdateUserInfo":  {"user", "admin"},
 		"/userinfo.UserInfo/ChangePassword":  {"user", "admin"},
 		"/userinfo.UserInfo/GetUserInfoByID": {"admin"},
+		"/userinfo.UserInfo/AddFamily":       {"admin"},
+		"/userinfo.UserInfo/DeleteFamily":    {"admin"},
 		"/userinfo.UserInfo/DeleteUser":      {"admin"},
-		"/permissions.Permissions/IsAdmin":   {"admin"},
 	}
 
 	grpcApp := grpcapp.New(

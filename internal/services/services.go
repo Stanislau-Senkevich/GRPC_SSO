@@ -27,4 +27,6 @@ type UserInfo interface {
 	UpdateUserInfo(ctx context.Context, updatedUser *models.User) error
 	ChangePassword(ctx context.Context, oldPassword, newPasswordHash string) error
 	DeleteUser(ctx context.Context, userID int64) error
+	AddFamily(ctx context.Context, familyID int64, userID int64) error
+	DeleteFamily(ctx context.Context, familyID int64, userID int64) error
 }

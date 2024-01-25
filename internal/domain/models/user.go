@@ -18,4 +18,5 @@ type User struct {
 	PassHash     string    `bson:"pass_hash"`
 	RegisteredAt time.Time `bson:"registered_at"`
 	Role         Role      `bson:"role"`
+	FamilyIDs    []int64   `bson:"family_ids"`
 }
