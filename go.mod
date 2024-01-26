@@ -3,7 +3,7 @@ module github.com/Stanislau-Senkevich/GRPC_SSO
 go 1.21.6
 
 require (
-	github.com/Stanislau-Senkevich/protocols v1.1.1
+	github.com/Stanislau-Senkevich/protocols v1.1.3
 	github.com/badoux/checkmail v1.2.4
 	github.com/brianvoe/gofakeit v3.18.0+incompatible
 	github.com/golang-jwt/jwt v3.2.2+incompatible

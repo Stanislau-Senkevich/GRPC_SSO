@@ -6,6 +6,8 @@ github.com/Stanislau-Senkevich/protocols v1.1.0 h1:wwgIKKnGdZfuu4BaOCxX877klqlWV
 github.com/Stanislau-Senkevich/protocols v1.1.0/go.mod h1:5YY2LiwzTkWN7TAN7QvlH8p8uhHjCru7WSKBbOyDgNc=
 github.com/Stanislau-Senkevich/protocols v1.1.1 h1:DlLBi1D5a+HaXt9iWuy7W/ZcrKjW8HWR7f84SsSQPPI=
 github.com/Stanislau-Senkevich/protocols v1.1.1/go.mod h1:5YY2LiwzTkWN7TAN7QvlH8p8uhHjCru7WSKBbOyDgNc=
+github.com/Stanislau-Senkevich/protocols v1.1.3 h1:kEeIOmYqQrbWxfkg4Vxl/tSPEbRHIKfo/FtWjys+DHo=
+github.com/Stanislau-Senkevich/protocols v1.1.3/go.mod h1:5YY2LiwzTkWN7TAN7QvlH8p8uhHjCru7WSKBbOyDgNc=
 github.com/badoux/checkmail v1.2.4 h1:4zMjdYDjE2Q7xF06VNfyN8P9JGU7epLjNb+Yu5OThVI=
 github.com/badoux/checkmail v1.2.4/go.mod h1:XroCOBU5zzZJcLvgwU15I+2xXyCdTWXyR9MGfRhBYy0=
 github.com/brianvoe/gofakeit v3.18.0+incompatible h1:wDOmHc9DLG4nRjUVVaxA+CEglKOW72Y5+4WNxUIkjM8=

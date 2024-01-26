@@ -37,6 +37,7 @@ func (s *serverAPI) GetUserInfoByID(
 
 	log.Info("user info successfully retrieved")
 	return &ssov1.GetUserInfoByIDResponse{
+		UserId:       user.ID,
 		Email:        user.Email,
 		PhoneNumber:  user.PhoneNumber,
 		Name:         user.Name,
