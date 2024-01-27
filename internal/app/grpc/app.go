@@ -27,6 +27,7 @@ func New(
 	authService services.Auth,
 	permService services.Permissions,
 	userInfoService services.UserInfo,
+	familyService services.Family,
 	accessibleRoles map[string][]string,
 	jwtManager *jwtmanager.Manager,
 ) *App {
@@ -40,7 +41,7 @@ func New(
 
 	auth.Register(gRPCServer, log, authService)
 	permissions.Register(gRPCServer, log, permService)
-	userinfo.Register(gRPCServer, log, userInfoService)
+	userinfo.Register(gRPCServer, log, userInfoService, familyService)
 
 	return &App{log, gRPCServer, gRPCConfig}
 }

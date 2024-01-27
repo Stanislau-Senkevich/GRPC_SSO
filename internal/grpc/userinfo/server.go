@@ -11,12 +11,18 @@ type serverAPI struct {
 	ssov1.UnimplementedUserInfoServer
 	log      *slog.Logger
 	userInfo services.UserInfo
+	family   services.Family
 }
 
 // Register registers the UserInfo gRPC service implementation with the provided gRPC server.
-func Register(gRPC *grpc.Server, log *slog.Logger, userInfo services.UserInfo) {
+func Register(
+	gRPC *grpc.Server,
+	log *slog.Logger,
+	userInfo services.UserInfo,
+	family services.Family) {
 	ssov1.RegisterUserInfoServer(gRPC, &serverAPI{
 		log:      log,
 		userInfo: userInfo,
+		family:   family,
 	})
 }

@@ -8,6 +8,8 @@ github.com/Stanislau-Senkevich/protocols v1.1.1 h1:DlLBi1D5a+HaXt9iWuy7W/ZcrKjW8
 github.com/Stanislau-Senkevich/protocols v1.1.1/go.mod h1:5YY2LiwzTkWN7TAN7QvlH8p8uhHjCru7WSKBbOyDgNc=
 github.com/Stanislau-Senkevich/protocols v1.1.3 h1:kEeIOmYqQrbWxfkg4Vxl/tSPEbRHIKfo/FtWjys+DHo=
 github.com/Stanislau-Senkevich/protocols v1.1.3/go.mod h1:5YY2LiwzTkWN7TAN7QvlH8p8uhHjCru7WSKBbOyDgNc=
+github.com/Stanislau-Senkevich/protocols v1.1.4 h1:bxONItCek1euHrt9XSLodHylTTTbUoFhfkFhGYV6y7M=
+github.com/Stanislau-Senkevich/protocols v1.1.4/go.mod h1:5YY2LiwzTkWN7TAN7QvlH8p8uhHjCru7WSKBbOyDgNc=
 github.com/badoux/checkmail v1.2.4 h1:4zMjdYDjE2Q7xF06VNfyN8P9JGU7epLjNb+Yu5OThVI=
 github.com/badoux/checkmail v1.2.4/go.mod h1:XroCOBU5zzZJcLvgwU15I+2xXyCdTWXyR9MGfRhBYy0=
 github.com/brianvoe/gofakeit v3.18.0+incompatible h1:wDOmHc9DLG4nRjUVVaxA+CEglKOW72Y5+4WNxUIkjM8=
@@ -31,6 +33,8 @@ github.com/google/go-cmp v0.5.2/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/
 github.com/google/go-cmp v0.5.5/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
 github.com/google/go-cmp v0.5.9 h1:O2Tfq5qg4qc4AmwVlvv0oLiVAGB7enBSJ2x2DqQFi38=
 github.com/google/go-cmp v0.5.9/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
+github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.0.1 h1:HcUWd006luQPljE73d5sk+/VgYPGUReEVz2y1/qylwY=
+github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.0.1/go.mod h1:w9Y7gY31krpLmrVU5ZPG9H7l9fZuRu5/3R3S3FMtVQ4=
 github.com/hashicorp/hcl v1.0.0 h1:0Anlzjpi4vEasTeNFn2mLJgTSwt0+6sfsiTG8qcWGx4=
 github.com/hashicorp/hcl v1.0.0/go.mod h1:E5yfLk+7swimpb2L/Alb/PJmXilQ/rhwaUYs4T20WEQ=
 github.com/ilyakaznacheev/cleanenv v1.5.0 h1:0VNZXggJE2OYdXE87bfSSwGxeiGt9moSR2lOrsHHvr4=

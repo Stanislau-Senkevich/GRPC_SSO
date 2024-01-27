@@ -21,6 +21,10 @@ func (s *serverAPI) AddFamily(
 		slog.String("op", op),
 	)
 
+	log.Info("trying to add family to user's family list",
+		slog.Int64("family_id", req.GetFamilyId()),
+		slog.Int64("user_id", req.GetUserId()))
+
 	err := s.userInfo.AddFamily(ctx, req.GetFamilyId(), req.GetUserId())
 	if errors.Is(err, grpcerror.ErrUserInFamily) {
 		return nil, status.Error(codes.InvalidArgument, grpcerror.ErrUserInFamily.Error())
@@ -32,8 +36,12 @@ func (s *serverAPI) AddFamily(
 		log.Error("failed to add family",
 			sl.Err(err), slog.Int64("family_id", req.GetFamilyId()),
 			slog.Int64("user_id", req.GetUserId()))
-		return nil, status.Error(codes.Internal, "internal error")
+		return nil, status.Error(codes.Internal, grpcerror.ErrInternalError.Error())
 	}
+
+	log.Info("family added to user's family list",
+		slog.Int64("family_id", req.GetFamilyId()),
+		slog.Int64("user_id", req.GetUserId()))
 
 	return &ssov1.AddFamilyResponse{
 		Succeed: true,

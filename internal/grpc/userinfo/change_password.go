@@ -45,7 +45,7 @@ func (s *serverAPI) ChangePassword(
 	}
 	if err != nil {
 		log.Error("failed to change user's password", sl.Err(err))
-		return nil, status.Error(codes.Internal, "internal error")
+		return nil, status.Error(codes.Internal, grpcerror.ErrInternalError.Error())
 	}
 
 	log.Info("password successfully changed")

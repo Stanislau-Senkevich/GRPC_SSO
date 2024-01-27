@@ -20,10 +20,12 @@ func (s *serverAPI) SignUp(
 	ctx context.Context,
 	req *ssov1.SignUpRequest,
 ) (*ssov1.SignUpResponse, error) {
-	const op = "server.auth.SignIn"
+	const op = "auth.grpc.SignUp"
 	log := s.log.With(
 		slog.String("op", op),
 	)
+
+	log.Info("trying to sign-up user")
 
 	preUser := &models.User{
 		ID:           -1,
@@ -36,6 +38,7 @@ func (s *serverAPI) SignUp(
 	}
 
 	if err := validateRegister(preUser); err != nil {
+		log.Info("invalid input", sl.Err(err))
 		return nil, err
 	}
 
@@ -48,7 +51,7 @@ func (s *serverAPI) SignUp(
 		return nil, status.Error(codes.Internal, "internal error: %s")
 	}
 
-	s.log.Info("user was created", slog.Int64("user_id", userId))
+	log.Info("user was created", slog.Int64("user_id", userId))
 
 	return &ssov1.SignUpResponse{
 		UserId: userId,

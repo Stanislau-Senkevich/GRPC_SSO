@@ -23,9 +23,33 @@ func (s *serverAPI) DeleteUser(
 		slog.String("op", op),
 	)
 
-	log.Info("deleting user", slog.Int64("user_id", req.GetUserId()))
+	log.Info("deleting user from families", slog.Int64("user_id", req.GetUserId()))
 
-	err := s.userInfo.DeleteUser(ctx, req.GetUserId())
+	user, err := s.userInfo.GetUserInfoByID(ctx, req.GetUserId())
+	if err != nil {
+		log.Error("failed to get user's family list",
+			sl.Err(err), slog.Int64("user_id", req.GetUserId()))
+	}
+
+	err = s.family.DeleteUserFromFamilies(ctx, req.GetUserId(), user.FamilyIDs)
+	if err != nil {
+		log.Error("failed to delete user from family", sl.Err(err))
+		return nil, status.Error(codes.Internal, grpcerror.ErrInternalError.Error())
+	}
+
+	log.Info("user was deleted from families, trying to delete user's invites",
+		slog.Int64("user_id", req.GetUserId()))
+
+	err = s.family.DeleteUserInvites(ctx, req.GetUserId())
+	if err != nil {
+		log.Error("failed to delete user invites", sl.Err(err))
+		return nil, status.Error(codes.Internal, grpcerror.ErrInternalError.Error())
+	}
+
+	log.Info("user's invites deleted, trying to delete user",
+		slog.Int64("user_id", req.GetUserId()))
+
+	err = s.userInfo.DeleteUser(ctx, req.GetUserId())
 	if errors.Is(err, grpcerror.ErrUserNotFound) {
 		log.Info(grpcerror.ErrUserNotFound.Error())
 		return nil, status.Error(codes.InvalidArgument, grpcerror.ErrUserNotFound.Error())
@@ -33,7 +57,7 @@ func (s *serverAPI) DeleteUser(
 	if err != nil {
 		log.Error("failed to delete user", sl.Err(err),
 			slog.Int64("user_id", req.GetUserId()))
-		return nil, status.Error(codes.Internal, "internal error")
+		return nil, status.Error(codes.Internal, grpcerror.ErrInternalError.Error())
 	}
 
 	log.Info("user successfully deleted", slog.Int64("user_id", req.GetUserId()))

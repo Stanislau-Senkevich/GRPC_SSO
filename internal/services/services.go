@@ -30,3 +30,8 @@ type UserInfo interface {
 	AddFamily(ctx context.Context, familyID int64, userID int64) error
 	DeleteFamily(ctx context.Context, familyID int64, userID int64) error
 }
+
+type Family interface {
+	DeleteUserFromFamilies(ctx context.Context, userID int64, familyIDs []int64) error
+	DeleteUserInvites(ctx context.Context, userID int64) error
+}

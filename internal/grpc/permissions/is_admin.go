@@ -17,7 +17,7 @@ func (s *serverAPI) IsAdmin(
 	ctx context.Context,
 	req *ssov1.IsAdminRequest,
 ) (*ssov1.IsAdminResponse, error) {
-	const op = "perm.server.IsAdmin"
+	const op = "perm.grpc.IsAdmin"
 
 	log := s.log.With(slog.String("op", op))
 
@@ -29,7 +29,7 @@ func (s *serverAPI) IsAdmin(
 	}
 	if err != nil {
 		log.Error("failed to check if user is admin", sl.Err(err))
-		return nil, status.Error(codes.Internal, "internal error")
+		return nil, status.Error(codes.Internal, grpcerror.ErrInternalError.Error())
 	}
 
 	log.Info("successfully checked if user is admin")

@@ -24,6 +24,8 @@ func (s *serverAPI) GetUserInfo(
 		slog.String("op", op),
 	)
 
+	log.Info("trying to get user info")
+
 	user, err := s.userInfo.GetUserInfo(ctx)
 	if errors.Is(err, grpcerror.ErrUserNotFound) {
 		log.Info(grpcerror.ErrUserNotFound.Error())
@@ -31,10 +33,11 @@ func (s *serverAPI) GetUserInfo(
 	}
 	if err != nil {
 		log.Error("failed to get user info", sl.Err(err))
-		return nil, status.Error(codes.Internal, "internal error")
+		return nil, status.Error(codes.Internal, grpcerror.ErrInternalError.Error())
 	}
 
 	log.Info("user info successfully retrieved")
+
 	return &ssov1.GetUserInfoResponse{
 		UserId:       user.ID,
 		Email:        user.Email,

@@ -15,12 +15,13 @@ const (
 )
 
 type Config struct {
-	Env        string        `yaml:"env" env-default:"local"`
-	TokenTTL   time.Duration `yaml:"token_ttl"`
-	Mongo      MongoConfig   `yaml:"mongo_config"`
-	GRPC       GRPCConfig    `yaml:"grpc"`
-	HashSalt   string
-	SigningKey []byte
+	Env           string         `yaml:"env" env-default:"local"`
+	TokenTTL      time.Duration  `yaml:"token_ttl"`
+	Mongo         MongoConfig    `yaml:"mongo_config"`
+	GRPC          GRPCConfig     `yaml:"grpc"`
+	ClientsConfig *ClientsConfig `yaml:"clients_config"`
+	HashSalt      string
+	SigningKey    []byte
 }
 
 type MongoConfig struct {
@@ -34,6 +35,18 @@ type MongoConfig struct {
 type GRPCConfig struct {
 	Port    int           `yaml:"port"`
 	Timeout time.Duration `yaml:"timeout"`
+}
+
+type Client struct {
+	Address      string        `yaml:"address"`
+	Timeout      time.Duration `yaml:"timeout"`
+	RetriesCount int           `yaml:"retries_count"`
+}
+
+type ClientsConfig struct {
+	AdminEmail    string
+	AdminPassword string
+	Family        Client `yaml:"family"`
 }
 
 // MustLoad reads and loads the configuration from a file specified by the fetched config path.
@@ -82,6 +95,8 @@ func parseEnv(cfg *Config) error {
 	cfg.Mongo.Password = viper.GetString("mongo_password")
 	cfg.HashSalt = viper.GetString("hash_salt")
 	cfg.SigningKey = []byte(viper.GetString("signing_key"))
+	cfg.ClientsConfig.AdminEmail = viper.GetString("admin_email")
+	cfg.ClientsConfig.AdminPassword = viper.GetString("admin_password")
 
 	return nil
 }
@@ -105,6 +120,14 @@ func BindEnv() error {
 
 	if err := viper.BindEnv("signing_key"); err != nil {
 		return fmt.Errorf("failed to set up signing_key: %w", err)
+	}
+
+	if err := viper.BindEnv("admin_email"); err != nil {
+		return fmt.Errorf("failed to set up admin_email: %w", err)
+	}
+
+	if err := viper.BindEnv("admin_password"); err != nil {
+		return fmt.Errorf("failed to set up admin_password: %w", err)
 	}
 
 	return nil

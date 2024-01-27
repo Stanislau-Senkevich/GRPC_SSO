@@ -47,7 +47,7 @@ func (s *serverAPI) UpdateUserInfo(
 	}
 	if err != nil {
 		log.Error("failed to update user", sl.Err(err))
-		return nil, status.Error(codes.Internal, "internal error")
+		return nil, status.Error(codes.Internal, grpcerror.ErrInternalError.Error())
 	}
 
 	log.Info("info successfully updated")

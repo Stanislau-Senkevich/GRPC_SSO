@@ -18,12 +18,15 @@ func (s *serverAPI) SignIn(
 	ctx context.Context,
 	req *ssov1.SignInRequest,
 ) (*ssov1.SignInResponse, error) {
-	const op = "server.auth.SignIn"
+	const op = "auth.grpc.SignIn"
 	log := s.log.With(
 		slog.String("op", op),
 	)
 
+	log.Info("trying to sign-in user")
+
 	if err := validateLogin(req.GetEmail(), req.GetPassword()); err != nil {
+		log.Warn("invalid input", sl.Err(err))
 		return nil, err
 	}
 
@@ -33,8 +36,10 @@ func (s *serverAPI) SignIn(
 			return nil, status.Error(codes.InvalidArgument, grpcerror.ErrUserNotFound.Error())
 		}
 		log.Error("failed to log in user", sl.Err(err))
-		return nil, status.Error(codes.Internal, "internal error")
+		return nil, status.Error(codes.Internal, grpcerror.ErrInternalError.Error())
 	}
+
+	log.Info("token successfully generated")
 
 	return &ssov1.SignInResponse{
 		Token: token,

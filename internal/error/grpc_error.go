@@ -3,6 +3,7 @@ package grpcerror
 import "errors"
 
 var (
+	ErrInternalError   = errors.New("internal error")
 	ErrUserNotInFamily = errors.New("user already not in the family")
 	ErrUserInFamily    = errors.New("user already in the family")
 	ErrUserExists      = errors.New("user already exists")
