@@ -26,10 +26,18 @@ func (s *serverAPI) DeleteUser(
 	log.Info("deleting user from families", slog.Int64("user_id", req.GetUserId()))
 
 	user, err := s.userInfo.GetUserInfoByID(ctx, req.GetUserId())
+	if errors.Is(err, grpcerror.ErrUserNotFound) {
+		log.Info(grpcerror.ErrUserNotFound.Error())
+		return nil, status.Error(codes.InvalidArgument, grpcerror.ErrUserNotFound.Error())
+	}
 	if err != nil {
 		log.Error("failed to get user's family list",
 			sl.Err(err), slog.Int64("user_id", req.GetUserId()))
+		return nil, status.Error(codes.Internal, grpcerror.ErrInternalError.Error())
 	}
+
+	log.Info("user info successfully retrieved",
+		slog.Any("user", user))
 
 	err = s.family.DeleteUserFromFamilies(ctx, req.GetUserId(), user.FamilyIDs)
 	if err != nil {

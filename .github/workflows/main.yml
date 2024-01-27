@@ -61,7 +61,7 @@ jobs:
             export MONGO_USER=${{ secrets.MONGO_USER }}
             export MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }}
             export HASH_SALT=${{ secrets.HASH_SALT }}
-            export SIGNING_KEY=&{{ secrets.SIGNING_KEY }}
+            export SIGNING_KEY=${{ secrets.SIGNING_KEY }}
             export CONFIG_PATH=./config/dev.yaml
             
             # Run a new container from a new image

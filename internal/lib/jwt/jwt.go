@@ -92,6 +92,19 @@ func (m *Manager) GetClaims(ctx context.Context) (jwt.MapClaims, error) {
 	return claims, nil
 }
 
+func (m *Manager) GetToken(ctx context.Context) (string, error) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return "", grpcerror.ErrTokenClaims
+	}
+	values := md["authorization"]
+	if len(values) == 0 {
+		return "", grpcerror.ErrNoToken
+	}
+
+	return strings.Fields(values[0])[1], nil
+}
+
 func (m *Manager) GetUserIDFromContext(ctx context.Context) (int64, error) {
 	claims, err := m.GetClaims(ctx)
 	if err != nil {

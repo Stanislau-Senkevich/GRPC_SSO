@@ -10,6 +10,7 @@ import (
 	"github.com/Stanislau-Senkevich/GRPC_SSO/internal/lib/sl"
 	famv1 "github.com/Stanislau-Senkevich/protocols/gen/go/family"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"log/slog"
 )
@@ -46,7 +47,10 @@ func (s *FamilyService) DeleteUserFromFamilies(ctx context.Context, userID int64
 		return errors.New("nil familyIDs were provided") //nolint
 	}
 
+	token, _ := s.manager.GetToken(ctx)
+
 	for _, fID := range familyIDs {
+		ctx := metadata.AppendToOutgoingContext(ctx, "authorization", "Bearer "+token)
 		_, err := s.client.FamilyLeader.RemoveUser(ctx, &famv1.RemoveUserRequest{
 			UserId:   userID,
 			FamilyId: fID,
@@ -71,6 +75,9 @@ func (s *FamilyService) DeleteUserInvites(ctx context.Context, userID int64) err
 	log := s.client.Log.With(
 		slog.String("op", op),
 	)
+
+	token, _ := s.manager.GetToken(ctx)
+	ctx = metadata.AppendToOutgoingContext(ctx, "authorization", "Bearer "+token)
 
 	_, err := s.client.Invite.DeleteUserInvites(ctx, &famv1.DeleteUserInvitesRequest{
 		UserId: userID,

@@ -31,7 +31,7 @@ func New(
 		panic(fmt.Errorf("failed to initialize repository: %w", err))
 	}
 
-	jwtManager := jwtmanager.New(cfg.SigningKey, tokenTTL)
+	jwtManager := jwtmanager.New([]byte(cfg.SigningKey), tokenTTL)
 	log.Info("jwt-manager initialized")
 
 	familyClient, err := grpcclient.New(
