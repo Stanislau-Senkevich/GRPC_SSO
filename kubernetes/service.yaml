@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sso-service
+spec:
+  selector:
+    app: sso-grpc
+  ports:
+    - protocol: TCP
+      port: 44044
+      targetPort: 44044

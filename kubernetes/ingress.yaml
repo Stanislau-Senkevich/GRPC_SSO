@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sso-grpc
+spec:
+  rules:
+    - host: droplet.senkevichdev.work
+      http:
+        paths:
+          - path: /sso
+            pathType: Prefix
+            backend:
+              service:
+                name: sso-service
+                port:
+                  number: 44044
